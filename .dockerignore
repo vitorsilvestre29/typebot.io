@@ -1,4 +1,5 @@
 Dockerfile
+Dockerfile.*
 .dockerignore
 **/node_modules
 npm-debug.log
@@ -6,8 +7,20 @@ README.md
 **/.next
 .git
 .github
+.agents
+.claude
+.codex
+.husky
+.vscode
+.zed
+commands
+plans
+opensrc
 .nx
 **/.env
 landing-page
 docs
 wordpress
+CHANGELOG.md
+CONTRIBUTING.md
+SECURITY.md
