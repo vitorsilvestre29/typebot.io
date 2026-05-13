@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   const response = NextResponse.redirect(new URL(redirectPath, publicBaseUrl));
   const cookieOptions = {
     httpOnly: true,
-    sameSite: "lax" as const,
+    sameSite: "none" as const,
     secure: process.env.NODE_ENV === "production",
     expires: session.expires,
     path: "/",
