@@ -11,6 +11,39 @@ type SsoRequest = {
   workspaceName?: string | null;
 };
 
+export async function GET(request: Request) {
+  const url = new URL(request.url);
+  const sessionToken = url.searchParams.get("sessionToken");
+  const redirectPath = sanitizeRedirectPath(url.searchParams.get("redirectPath"));
+
+  if (!sessionToken || !redirectPath) {
+    return NextResponse.json({ error: "Invalid session handoff" }, { status: 400 });
+  }
+
+  const session = await prisma.session.findUnique({
+    where: { sessionToken },
+    select: { expires: true },
+  });
+
+  if (!session || session.expires < new Date()) {
+    return NextResponse.json({ error: "Session expired" }, { status: 401 });
+  }
+
+  const response = NextResponse.redirect(new URL(redirectPath, request.url));
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    expires: session.expires,
+    path: "/",
+  };
+
+  response.cookies.set("authjs.session-token", sessionToken, cookieOptions);
+  response.cookies.set("__Secure-authjs.session-token", sessionToken, cookieOptions);
+
+  return response;
+}
+
 export async function POST(request: Request) {
   const configuredSecret = process.env.FLUXOZAP_SSO_SECRET;
   const providedSecret = request.headers.get("x-fluxozap-secret");
@@ -105,4 +138,16 @@ export async function POST(request: Request) {
     workspaceId,
     userId: user.id,
   });
+}
+
+function sanitizeRedirectPath(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value, "http://fluxozap.local");
+    if (url.origin !== "http://fluxozap.local") return null;
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return null;
+  }
 }
