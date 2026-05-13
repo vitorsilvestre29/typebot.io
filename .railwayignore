@@ -1,0 +1,25 @@
+.git
+.github
+.agents
+.claude
+.codex
+.vscode
+.zed
+plans
+opensrc
+
+# docs and meta
+apps/docs
+apps/landing-page
+README.md
+CONTRIBUTING.md
+SECURITY.md
+CHANGELOG.md
+AGENTS.md
+CLAUDE.md
+RAILWAY_FLUXOZAP.md
+
+# local/dev artifacts
+*.log
+.DS_Store
+Thumbs.db

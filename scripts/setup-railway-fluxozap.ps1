@@ -57,8 +57,8 @@ Write-Host "Builder URL: $builderUrl"
 Write-Host "Viewer URL:  $viewerUrl"
 
 $commonVars = @(
-  "DATABASE_URL=${{typebot-postgres.DATABASE_URL}}",
-  "REDIS_URL=${{typebot-redis.REDIS_URL}}",
+  'DATABASE_URL=${{typebot-postgres.DATABASE_URL}}',
+  'REDIS_URL=${{typebot-redis.REDIS_URL}}',
   "ENCRYPTION_SECRET=$secret",
   "NEXTAUTH_URL=$builderUrl",
   "NEXT_PUBLIC_VIEWER_URL=$viewerUrl",

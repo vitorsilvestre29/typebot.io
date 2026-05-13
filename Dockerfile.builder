@@ -22,7 +22,8 @@ WORKDIR /app
 
 FROM base AS builder
 COPY . .
-RUN SENTRYCLI_SKIP_DOWNLOAD=1 bun install --frozen-lockfile
+RUN SENTRYCLI_SKIP_DOWNLOAD=1 bun install
+RUN bunx nx sync
 RUN SKIP_ENV_CHECK=true DATABASE_URL=postgresql:// NEXT_PUBLIC_VIEWER_URL=http://localhost bunx nx build builder
 RUN DATABASE_URL=postgresql:// bunx nx db:generate prisma
 
@@ -37,7 +38,7 @@ COPY --from=builder --chown=node:node /app/apps/builder/public ./apps/builder/pu
 COPY scripts/builder-entrypoint.sh ./
 RUN chmod +x ./builder-entrypoint.sh
 USER node
-ENTRYPOINT ./builder-entrypoint.sh
+ENTRYPOINT ["sh", "/app/builder-entrypoint.sh"]
 
 EXPOSE 3000
 ENV PORT=3000
