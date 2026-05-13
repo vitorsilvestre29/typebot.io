@@ -29,7 +29,13 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Session expired" }, { status: 401 });
   }
 
-  const response = NextResponse.redirect(new URL(redirectPath, request.url));
+  const publicBaseUrl =
+    process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BUILDER_URL ||
+    request.headers.get("x-forwarded-host")?.replace(/^/, "https://") ||
+    request.url;
+
+  const response = NextResponse.redirect(new URL(redirectPath, publicBaseUrl));
   const cookieOptions = {
     httpOnly: true,
     sameSite: "lax" as const,
