@@ -49,9 +49,17 @@ const nextConfig = {
   outputFileTracingRoot: join(__dirname, "../../"),
   headers: async () => {
     const isDev = process.env.NODE_ENV !== "production";
-    const frameAncestors = process.env.FLUXOZAP_FRAME_ANCESTORS;
-    const frameHeaders = frameAncestors
-      ? [
+    const frameAncestors =
+      process.env.FLUXOZAP_FRAME_ANCESTORS ||
+      "https://fluxpzap-production.up.railway.app";
+    return [
+      {
+        source: "/(.*)?",
+        headers: [
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
           {
             key: "Content-Security-Policy",
             value: [
@@ -70,39 +78,6 @@ const nextConfig = {
               `frame-ancestors 'self' ${frameAncestors}`,
             ].join("; "),
           },
-        ]
-      : [
-          {
-            key: "X-Frame-Options",
-            value: "SAMEORIGIN",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              `script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https:${isDev ? " http://localhost:* " : ""}`,
-              "style-src 'self' 'unsafe-inline' https:",
-              `connect-src 'self' https: wss:${
-                isDev ? " http://localhost:* ws://localhost:*" : ""
-              }`,
-              "frame-src 'self' https:",
-              `img-src 'self' data: blob: https:${isDev ? " http://localhost:*" : ""}`,
-              "font-src 'self' https: data:",
-              `media-src 'self' blob: https:${isDev ? " http://localhost:* " : ""}`,
-              "worker-src 'self' blob:",
-              "object-src 'none'",
-            ].join("; "),
-          },
-        ];
-    return [
-      {
-        source: "/(.*)?",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          ...frameHeaders,
         ],
       },
     ];
