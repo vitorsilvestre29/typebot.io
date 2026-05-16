@@ -20,6 +20,8 @@ CLAUDE.md
 RAILWAY_FLUXOZAP.md
 
 # local/dev artifacts
+node_modules
+.next
 *.log
 .DS_Store
 Thumbs.db
